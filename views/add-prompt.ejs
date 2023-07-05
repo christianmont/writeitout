@@ -1,0 +1,11 @@
+<form method="post" target="promptFrame" id="promptForm">
+    <textarea name="prompt" id="prompt" style="width:400px; height:200px;"></textarea>
+    <button type="button" onclick="clearField()">Submit</button>
+    <iframe name="promptFrame" style="display: none;"></iframe>
+</form>
+<script>
+    function clearField() {
+        document.getElementById("promptForm").submit()
+        document.getElementById("prompt").value = ""
+    }
+</script>

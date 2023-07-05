@@ -1,0 +1,55 @@
+<div class="header">
+    <div class="navlink"><a href="/" class="word">Home</a></div>
+    <div class="right-block">
+        <% if(!user || !user.userName) { %>
+        <div class="navlink"><a href="/sign-up" class="word">Sign up</a></div>
+        <div class="navlink"><a href="/login" class="word">Login</a></div>
+        <% } else { %>
+        <div class="navlink"><a href="/users/<%=user._id%>" class="img"><img src="/images/<%=user.image%>"/></a></div>
+        <% } %>
+    </div>
+</div>
+<div class="nav-displacer"></div>
+<style>
+    .header {
+        width: 100%;
+        border-bottom: 1px solid #ddd;
+        padding: 0; font-size:0px;
+        position: fixed;
+        z-index: 1;
+        background: white;
+        top: 0;
+        left: 0;
+    }
+    .header  > * {
+        vertical-align: middle;
+    }
+    .header .right-block {
+        float: right;
+    }
+    .header .navlink.logo {
+        margin-right: 15px;
+    }
+    .header .navlink img {
+        width: 26px;
+        height: 26px;
+        margin: 20px;
+    }
+    .header .navlink {
+        color: black;
+        display: inline-block;
+    }
+    .header .navlink .word {
+        display: block;
+        margin: 25px 20px;
+        font-size: 14px;
+        text-decoration: none;
+    }
+    .header a {
+        cursor: pointer;
+        color: black;
+    }
+    .nav-displacer {
+        padding-top: 67px;
+    }
+</style>

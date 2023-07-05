@@ -1,0 +1,13 @@
+<% if(user && user._id == profileUser._id) { %>
+  <% if(waiting == 1) { %>
+    <p>Waiting for <%=waiting%> match.</p>
+  <% } else { %>
+    <p>Waiting for <%=waiting%> matches.</p>
+  <% } %>
+<% } %>
+<% matches.forEach((match) => { %>
+    <div>
+      <a><a href="/matches/<%=match.id%>"><b><%=match.topic%></b></a></p>
+      <p><%=id_to_name[match.a]%> vs. <%=id_to_name[match.b]%></p>
+    </div>
+<% }) %>

@@ -1,0 +1,15 @@
+<% if(user) { %>
+<p>Total Credits: <%=user.credits%></p>
+<form target="submitFrame" method="POST" action="/challenge">
+  <button>Join Match</button>
+</form>
+<iframe style="display: none;" name="submitFrame"></iframe>
+<% } %>
+<p>Current Matches:</p>
+<% matches.forEach((match) => { %>
+  <div>
+    <a><a href="/matches/<%=match.id%>"><b><%=match.topic%></b></a></p>
+    <p><%=id_to_name[match.a]%> vs. <%=id_to_name[match.b]%></p>
+  </div>
+<% }) %>
+

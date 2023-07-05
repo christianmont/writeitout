@@ -1,0 +1,257 @@
+<% 
+if(user) { 
+    var uName = user.userName
+} else {
+    var uName = ""
+}
+%>
+<div class="big-horiz-div">
+    <div class="horiz-div topic"><%=match.topic%></div>
+    <div class="horiz-div byline"><%=id_to_name[match.a]%> vs. <%=id_to_name[match.b]%></div>
+</div>
+<div class="big-horiz-div">
+    <div class="horiz-div">Status: <%=match.status%></div>
+    <div class="horiz-div">
+        <% if(user && (match.a == user._id && !match.aStory || match.b == user._id && !match.bStory) && match.status=="Writing") { %>
+            <a href="/matches/write/<%=match._id%>">Write</a>
+        <% } %>
+    </div>
+</div>
+<div class="big-horiz-div">
+    <% if(match.status == "Writing") { %>
+        <div class="horiz-div" id="time">
+            <%
+            // Create a Date object with the inputted date
+            var inputtedDate = new Date(match.createdAt);
+    
+            // Add 3 days to the inputted date
+            var futureDate = new Date(inputtedDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+    
+            // Get the current date and time in the America/Sao_Paulo timezone
+            var currentDateTime = new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" });
+    
+            // Convert the current date and time to a formatted string
+            var formattedCurrentDateTime = currentDateTime.replace(", ", " - ");
+    
+            // Calculate the time difference between the current date/time and the future date
+            var timeDifference = futureDate.getTime() - new Date().getTime();
+    
+            // Calculate the number of days, hours, minutes, and seconds until the future date
+            var days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
+            var hours = Math.floor((timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            var minutes = Math.floor((timeDifference % (60 * 60 * 1000)) / (60 * 1000));
+            var seconds = Math.floor((timeDifference % (60 * 1000)) / 1000);
+    
+            // Display the time until the future date
+            var formattedString = days + " days, " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds"; %>
+            Time remaining: <%=formattedString%>
+        </div>
+    <% } %>
+</div>
+<% if(match.status == "Finished") { %>
+    <div class="horiz-div">
+        <p>Votes:</p>
+        <p><%=id_to_name[match.a]%>: <%=aVotes%></p>
+        <p><%=id_to_name[match.b]%>: <%=bVotes%></p>
+        <% if(aVotes > bVotes) { %>
+            <p>Result: <%=id_to_name[match.a]%> won!</p>
+        <% } else if (aVotes < bVotes) { %>
+            <p>Result: <%=id_to_name[match.b]%> won!</p>
+        <% } else { %>
+            <p>Result: It's a tie!</p>
+        <% } %>
+    </div>
+<% } %>
+<div class="horiz-div">
+    <button onclick="showStories()">Stories</button>
+    <button>Comments</button>
+    <button onclick="showVotes()">Votes</button>
+</div>
+<div id="stories">
+    <div class="story-holder horiz-div">
+        <div class="story-label">
+            <%=id_to_name[match.a]%>
+        </div>
+        <div class="story-text">
+            <% if(match.status ==  "Writing") { %>
+                <% if(user && match.aStory && match.a == user._id) { %>
+                    <%-match.aStory%>
+                <% } else if(match.aStory) { %>
+                    Submitted!
+                <% } else { %>
+                    In progress...
+                <% } %>
+            <% } else { %>
+                <% if(match.aStory) { %>
+                    <%-match.aStory%>
+                <% } else { %>
+                    Forfeit
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+    <div class="story-holder horiz-div">
+        <div class="story-label">
+            <%=id_to_name[match.b]%>
+        </div>
+        <div class="story-text">
+            <% if(match.status ==  "Writing") { %>
+                <% if(user && match.bStory && match.b == user._id) { %>
+                    <%-match.bStory%>
+                <% } else if(match.bStory) { %>
+                    Submitted!
+                <% } else { %>
+                    In progress...
+                <% } %>
+            <% } else { %>
+                <%-match.bStory%>
+            <% } %>
+        </div>
+    </div>
+</div>
+<div id="comments"></div>
+<div id="votes" style="display:none;">
+    <% if(user && match.status == "Voting" && match.a != user._id && match.b != user._id) { %>
+        <button id="show-new-vote" onclick="showNewVote()">New vote</button>
+        <form id="new-vote" style="display: none;" method="post" target="voteFrame" action="/matches/vote/<%=match.id%>">
+            <p>New vote:</p>
+            <p>Remember to read our voting policy.</p>
+            <input class="winner-btn" type="radio" name="winner" value="a">
+            <label for="user_a"><%=id_to_name[match.a]%></label><br>
+            <input class="winner-btn" type="radio" name="winner" value="b">
+            <label for="user_b"><%=id_to_name[match.b]%></label><br>
+            <textarea name="RFD" id="RFD"></textarea>
+            <p><button onclick="return sumbitVote()">Create vote</button></p>
+        </form>
+    <% } %>
+    <iframe style="display: none;" name="voteFrame"></iframe>
+    <div id="votesList">
+        <% votes.forEach((v) => { %>
+            <div class="vote">
+                <div>Written by: <%=id_to_name[v.user]%></div>
+                <% if(v.winner=="a") { %>
+                    <div>Winner: <%=id_to_name[match.a]%></div>
+                <% } else { %>
+                    <div>Winner: <%=id_to_name[match.b]%></div>
+                <% } %>
+                <div>RFD:</div>
+                <div><%=v.RFD%></div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+<style>
+    .topic {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .byline {
+        font-size: 20px;
+    }
+    .story-holder {
+        border: 1px solid black;
+    }
+    .story-holder .story-label {
+        padding: 5px;
+        background: black;
+        color: white;
+    }
+    .story-holder .story-text {
+        padding: 5px;
+    }
+    .vote {
+        border: 1px solid black;
+        padding: 5px 5px 0 5px;
+        margin-bottom: 10px;
+    }
+    .vote:last-of-type {
+        margin-bottom: 0;
+    }
+    .vote div {
+        padding: 5px 0;
+    }
+    .horiz-div {
+        margin-bottom: 10px;
+    }
+    .big-horiz-div {
+        margin-bottom: 20px;
+    }
+    .horiz-div:last-of-type {
+        margin-bottom: 10px;
+    }
+</style>
+<script>
+    var timeDisplay = document.getElementById("time");
+    var inputDate = `<%=match.createdAt%>`
+    function refreshTime() {
+        // Create a Date object with the inputted date
+        var inputtedDate = new Date(inputDate);
+
+        // Add 3 days to the inputted date
+        var futureDate = new Date(inputtedDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+        // Get the current date and time in the America/Sao_Paulo timezone
+        var currentDateTime = new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" });
+
+        // Convert the current date and time to a formatted string
+        var formattedCurrentDateTime = currentDateTime.replace(", ", " - ");
+
+        // Calculate the time difference between the current date/time and the future date
+        var timeDifference = futureDate.getTime() - new Date().getTime();
+
+        // Calculate the number of days, hours, minutes, and seconds until the future date
+        var days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
+        var hours = Math.floor((timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        var minutes = Math.floor((timeDifference % (60 * 60 * 1000)) / (60 * 1000));
+        var seconds = Math.floor((timeDifference % (60 * 1000)) / 1000);
+
+        // Display the time until the future date
+        timeDisplay.innerHTML = "Time remaining: " + days + " days, " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds";
+    }
+    setInterval(refreshTime, 10);
+    function showStories() {
+        document.getElementById("stories").style.display = "block"
+        document.getElementById("comments").style.display = "none"
+        document.getElementById("votes").style.display = "none"
+    }
+    function showComments() {
+        document.getElementById("stories").style.display = "none"
+        document.getElementById("comments").style.display = "block"
+        document.getElementById("votes").style.display = "none"
+    }
+    function showVotes() {
+        document.getElementById("stories").style.display = "none"
+        document.getElementById("comments").style.display = "none"
+        document.getElementById("votes").style.display = "block"
+    }
+    function showNewVote() {
+        document.getElementById("new-vote").style.display = "block"
+        document.getElementById("show-new-vote").style.display = "none"
+    }
+    function hideNewVotePermanent() {
+        document.getElementById("new-vote").style.display = "none"
+    }
+    function sumbitVote() {
+        console.log("hi")
+        let el = document.getElementsByClassName("winner-btn")
+        let winner = ""
+        for(let i = 0; i < el.length; i++) {
+            if(el[i].checked) {
+                if(el[i].value == "a") {
+                    winner = `<%=id_to_name[match.a]%>`
+                } else {
+                    winner = `<%=id_to_name[match.a]%>`
+                }
+            }
+        }
+        document.getElementById("votesList").innerHTML = 
+        `<div class="vote">
+            <div>Written by: <%=uName%></div>
+            <div>Winner: ${winner}</div>
+            <div>RFD:</div>
+            <div>${document.getElementById("RFD").value}</div>
+        </div>
+        ${document.getElementById("votesList").innerHTML}`
+        hideNewVotePermanent();
+    }
+</script>

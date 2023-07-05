@@ -1,0 +1,39 @@
+<%
+    if(!firstName) {
+        var firstName="";
+    }
+    if(!lastName) {
+        var lastName="";
+    }
+    if(!username) {
+        var username="";
+    }
+    if(!email) {
+        var email="";
+    }
+    if(!password) {
+        var password="";
+    }
+%>
+<form action="/finish-signin" method="post">
+    <a class="form-logo" href="/">WriteItOut</a>
+    <h2 class="text-center">Get Started</h2>
+    <div class="input-label req">Username</div>
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" class="form-control" name="username" required="required" value="<%=username%>">				
+        </div>
+    </div>
+    <% if(nameTaken) { %>
+        <div class="form-msg">This username is already taken</div>
+    <% } %>
+    <div class="input-label req">Email</div>
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" class="form-control" name="email" required="required" value="<%=email%>">				
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary login-btn btn-block">Create Account</button>
+    </div>
+</form>
