@@ -1,0 +1,17 @@
+<table>
+    <tr>
+        <th>User</th>
+        <th>Elo</th>
+      </tr>
+    <% users.forEach((u) => { %>
+    <tr>
+      <th><%=u.userName%></th>
+      <th><%=u.elo%></th>
+    </tr>
+    <% }) %>
+</table>
+<style>
+    td,th {
+        border: 1px solid black;
+    }
+</style>

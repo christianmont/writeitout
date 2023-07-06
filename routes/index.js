@@ -78,7 +78,7 @@ router.post('/login', function(req, res, next) {
           }
       }
       if (!user) {
-          return res.render('layouts/login', {
+          return res.render('layouts/main', {
               body: 'login',
               noUser: noUser,
               incorrectPword: incorrectPword,
@@ -256,10 +256,12 @@ router.post('/challenge', async (req, res) => {
 });
 
 router.get('/leaderboard', async (req, res) => {
+  let users = await User.find().sort({"elo":-1})
   res.render('layouts/main', {
     body: 'leaderboard',
     title: 'Leaderboard',
-    user: req.user
+    user: req.user,
+    users
   });
 })
 

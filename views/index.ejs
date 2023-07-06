@@ -1,9 +1,16 @@
+<%
+if(user) { 
+  var userCredits = user.credits;
+} else {
+  var userCredits = 0;
+}
+%>
 <% if(user) { %>
-<p>Total Credits: <%=user.credits%></p>
-<form target="submitFrame" method="POST" action="/challenge">
-  <button>Join Match</button>
-</form>
-<iframe style="display: none;" name="submitFrame"></iframe>
+  <p id="credits-count">Total Credits: <%=userCredits%></p>
+  <form target="submitFrame" method="POST" action="/challenge">
+    <button onclick="showPopup()">Join Match</button>
+  </form>
+  <iframe style="display: none;" name="submitFrame"></iframe>
 <% } %>
 <p>Current Matches:</p>
 <% matches.forEach((match) => { %>
@@ -12,4 +19,35 @@
     <p><%=id_to_name[match.a]%> vs. <%=id_to_name[match.b]%></p>
   </div>
 <% }) %>
+<div id="popup" style="opacity: 0"></div>
+<style>
+  #popup {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    transition: opacity 1s;
+  }
+</style>
+<script>
+  let userCredits = `<%=userCredits%>`
+  var timeout;
+  function showPopup() {
+    console.log("show")
+    if(userCredits <= 0) {
+      document.getElementById("popup").innerHTML = "You don't have enough credits. Earn credits by voting."
+    } else {
+      userCredits--
+      document.getElementById("credits-count").innerHTML = `Total Credits: ${userCredits}`
+      document.getElementById("popup").innerHTML = "Check your profile to see when your match is accepted."
+    }
+    window.clearTimeout(timeout);
+    document.getElementById("popup").style.opacity = 1;
+    timeout = setTimeout(() => {
+      document.getElementById("popup").style.opacity = 0;
+    }, "4000");
+  }
+</script>
 
